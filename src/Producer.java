@@ -1,10 +1,16 @@
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-class Producer {
+import com.mongodb.BasicDBObject;
+
+public class Producer {
  
     private String url;     // URL of the JMS server.
     private String subject; // Name of the queue we will be sending messages to
@@ -66,12 +72,32 @@ class Producer {
     	private void sendMessages() {
     		try {
 	    		for(int i = 0; i < 6; i++) {
-	    			TextMessage message = session.createTextMessage("Real" + i);
-	
+	    			ObjectMessage message = session.createObjectMessage();
+	    			BasicDBObject object = new BasicDBObject();
+	    			object.put("timestamp", new Date());
+	    			object.put("pv_name", "channel" + i);
+	    			object.put("text_message", "message" + i);
+	    			Map<String, String> properties = new HashMap<String, String>();
+	    			for(int j = 0; j < (int)(Math.random()*10); j++) {
+	    				int rand = (int)(Math.random()*3);
+	    				switch(rand) {
+	    				case 0:
+	    					properties.put("property" + j, "red");
+	    					break;
+	    				case 1:
+	    					properties.put("property" + j, "blue");
+	    					break;
+	    				case 2:
+	    					properties.put("property" + j, "green");
+	    					break;
+	    				}
+	    			}
+	    			object.put("properties", properties);
+	    			message.setObject(object);
 	    	        // Here we are sending the message!
-	    			System.out.println("Sending message '" + message.getText() + "'");
+	    			System.out.println("Sending message '" + ((BasicDBObject)message.getObject()).toString()+ "'");
 	    	        producer.send(message);
-	    	        System.out.println("Sent message '" + message.getText() + "'");
+	    	        System.out.println("Sent message '" + ((BasicDBObject)message.getObject()).toString() + "'");
 	    	        Thread.sleep(1000);
 	    		}
     		}

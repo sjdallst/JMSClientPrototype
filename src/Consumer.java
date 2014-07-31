@@ -4,6 +4,8 @@ import javax.jms.*;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import com.mongodb.BasicDBObject;
+
 public class Consumer {
 	private String url;     // URL of the JMS server.
     private String subject; // Name of the queue we will be sending messages to
@@ -67,8 +69,8 @@ public class Consumer {
 	    		for(int i = 0; i < 6; i++) {	
 	    	        // Here we are sending the message!
 	    			Message recievedMessage = consumer.receive();
-	    			if(recievedMessage instanceof TextMessage) {
-	    				System.out.println("Recieved message '" + ((TextMessage)recievedMessage).getText() + "'");
+	    			if(recievedMessage instanceof ObjectMessage) {
+	    				System.out.println("Recieved message '" + ((BasicDBObject)((ObjectMessage)recievedMessage).getObject()).toString() + "'");
 	    			}
 	    		}
     		}
