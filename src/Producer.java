@@ -3,6 +3,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnection;
@@ -72,38 +75,41 @@ public class Producer {
     	private void sendMessages() {
     		try {
 	    		for(int i = 0; i < 6; i++) {
-	    			ObjectMessage message = session.createObjectMessage();
-	    			BasicDBObject object = new BasicDBObject();
-	    			object.put("timestamp", new Date());
-	    			object.put("pv_name", "channel" + i);
-	    			object.put("text_message", "message" + i);
-	    			Map<String, String> properties = new HashMap<String, String>();
-	    			for(int j = 0; j < (int)(Math.random()*10); j++) {
-	    				int rand = (int)(Math.random()*3);
-	    				switch(rand) {
-	    				case 0:
-	    					properties.put("property" + j, "red");
-	    					break;
-	    				case 1:
-	    					properties.put("property" + j, "blue");
-	    					break;
-	    				case 2:
-	    					properties.put("property" + j, "green");
-	    					break;
-	    				}
-	    			}
-	    			object.put("properties", properties);
-	    			message.setObject(object);
+	    			TextMessage message = session.createTextMessage();
+	    			message.setText(createDummyMessage(i));
 	    	        // Here we are sending the message!
-	    			System.out.println("Sending message '" + ((BasicDBObject)message.getObject()).toString()+ "'");
+	    			System.out.println("Sending message '" + ((TextMessage)message).getText()+ "'");
 	    	        producer.send(message);
-	    	        System.out.println("Sent message '" + ((BasicDBObject)message.getObject()).toString() + "'");
+	    	        System.out.println("Sent message '" + ((TextMessage)message).getText() + "'");
 	    	        Thread.sleep(1000);
 	    		}
     		}
     		catch(Throwable e) {
     			System.out.println(e.getMessage());
     		}
+    	}
+    	private String createDummyMessage(int messageNumber)throws JSONException {
+    		JSONObject object = new JSONObject();
+			object.put("timestamp", new Date());
+			object.put("pv_name", "channel" + messageNumber);
+			object.put("text_message", "message" + messageNumber);
+			Map<String, String> properties = new HashMap<String, String>();
+			for(int j = 0; j < (int)(Math.random()*10); j++) {
+				int rand = (int)(Math.random()*3);
+				switch(rand) {
+				case 0:
+					properties.put("property" + j, "red");
+					break;
+				case 1:
+					properties.put("property" + j, "blue");
+					break;
+				case 2:
+					properties.put("property" + j, "green");
+					break;
+				}
+			}
+			object.put("properties", properties);
+			return object.toString();
     	}
     }
 }

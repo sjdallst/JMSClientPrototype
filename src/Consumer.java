@@ -69,8 +69,8 @@ public class Consumer {
 	    		for(int i = 0; i < 6; i++) {	
 	    	        // Here we are sending the message!
 	    			Message recievedMessage = consumer.receive();
-	    			if(recievedMessage instanceof ObjectMessage) {
-	    				System.out.println("Recieved message '" + ((BasicDBObject)((ObjectMessage)recievedMessage).getObject()).toString() + "'");
+	    			if(recievedMessage instanceof TextMessage) {
+	    				System.out.println("Recieved message '" + ((TextMessage)recievedMessage).getText() + "'");
 	    			}
 	    		}
     		}
