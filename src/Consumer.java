@@ -36,7 +36,7 @@ public class Consumer {
         // Destination represents here our queue 'TESTQUEUE' on the
         // JMS server. You don't have to do anything special on the
         // server to create it, it will be created automatically.
-        destination = session.createQueue(subject);
+        destination = session.createTopic(subject);
 
         // MessageProducer is used for sending messages (as opposed
         // to MessageConsumer which is used for receiving them)
